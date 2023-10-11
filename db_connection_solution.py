@@ -11,16 +11,43 @@
 
 #importing some Python libraries
 # --> add your Python code here
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 def connectDataBase():
-
+    
+    DB_NAME = "CPP"
+    DB_USER = "postgres"
+    DB_PASS = "123"
+    DB_HOST = "localhost"
+    DB_PORT = "5432"
+    
+    try:
+        conn = psycopg2.connect(database=DB_NAME,
+                                user=DB_USER,
+                                host=DB_HOST,
+                                port=DB_PORT,
+                                cursor_factory=RealDictCursor)
+        
+        return conn
+        
+    except:
+        print("Database not connected successfully")
+    
+    
     # Create a database connection object using psycopg2
     # --> add your Python code here
 
-def createCategory(cur, cur, catId, catName):
-
+def createCategory(cur, catId, catName):
     # Insert a category in the database
     # --> add your Python code here
+    
+    sql = ""
+    
+    recset = [catId,catName]
+    cur.execute(sql, recset)
+
+   
 
 def createDocument(cur, docId, docText, docTitle, docDate, docCat):
 
@@ -40,7 +67,8 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     # 4.1 Find all terms that belong to the document
     # 4.2 Create a data structure the stores how many times (count) each term appears in the document
     # 4.3 Insert the term and its corresponding count into the database
-    # --> add your Python code here
+    # --> add your Python
+    # code here
 
 def deleteDocument(cur, docId):
 
