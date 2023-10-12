@@ -120,17 +120,50 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     
     
     
-'''
+
 def deleteDocument(cur, docId):
     
     # 1 Query the index based on the document to identify terms
     # 1.1 For each term identified, delete its occurrences in the index for that document
     # 1.2 Check if there are no more occurrences of the term in another document. If this happens, delete the term from the database.
     # --> add your Python code here
+    
+    sql_index_terms = "SELECT * FROM index where doc_id=%s"
+    recset_index_terms = [docId]
+    cur.execute(sql_index_terms, recset_index_terms)
+    index_rows = cur.fetchall()
+    
+    index_terms = []
+    for row in index_rows:
+        cur_term = row['term']
+        index_terms.append(cur_term)
+        sql_delete_index = "DELETE FROM index WHERE doc_id=%s AND term=%s"
+        recset_delete_index = [docId,cur_term]
+        cur.execute(sql_delete_index, recset_delete_index)
+        print("Row: (", docId,cur_term,") deleted from index!")
+        
+        sql_check_term = "SELECT 1 FROM index where term=%s"
+        recset_check_term = [cur_term]
+        cur.execute(sql_check_term, recset_check_term)
+        index_exists = cur.fetchone()
+        
+        if not index_exists:
+            sql_delete_term = "DELETE FROM term WHERE term=%s"
+            recset_delete_term = [cur_term]
+            cur.execute(sql_delete_term, recset_delete_term)
+            print("No other occurences of (", cur_term, ") ,removing from DB!")
+        
 
     # 2 Delete the document from the database
     # --> add your Python code here
+    
+    sql_delete_doc = "DELETE FROM documents WHERE doc=%s"
+    recset_delete_doc = [docId]
+    cur.execute(sql_delete_doc, recset_delete_doc)
+    print("Document with id ", docId," deleted!")
 
+
+'''
 def updateDocument(cur, docId, docText, docTitle, docDate, docCat):
 
     # 1 Delete the document
