@@ -84,9 +84,11 @@ def updateDocument(cur, docId, docText, docTitle, docDate, docCat):
 
     # 1 Delete the document
     # --> add your Python code here
+    deleteDocument(docId)
 
     # 2 Create the document with the same id
     # --> add your Python code here
+    createDocument(docId, docText, docTitle, docDate, docCat)
 
 def getIndex(cur):
 
@@ -94,3 +96,23 @@ def getIndex(cur):
     # {'baseball':'Exercise:1','summer':'Exercise:1,California:1,Arizona:1','months':'Exercise:1,Discovery:3'}
     # ...
     # --> add your Python code here
+    
+    sql_query_index = "SELECT doc_id, term, count title FROM INDEX JOIN documents WHERE doc_id = doc"
+    cur.execute(sql_query_index)
+    index_list = cur.fetchall()
+    
+    index_map = {}
+    for index in index_list:
+        cur_term = index['term']
+        cur_title = index['title']
+        cur_count = index['count']
+        
+        if cur_term in index_map:
+            index_map[cur_term][cur_title] = cur_count
+        else:
+            index_map[cur_term] = {}
+            index_map[cur_term][cur_title] = cur_count
+            
+    print(index_map)
+        
+        
