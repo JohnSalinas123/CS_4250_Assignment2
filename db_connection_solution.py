@@ -1,8 +1,8 @@
 #-------------------------------------------------------------------------
-# AUTHOR: your name
-# FILENAME: title of the source file
-# SPECIFICATION: description of the program
-# FOR: CS 4250- Assignment #1
+# AUTHOR: John Salinas
+# FILENAME: db_connection_solution
+# SPECIFICATION: Perform CRUD operations on corpus database
+# FOR: CS 4250- Assignment #2
 # TIME SPENT: how long it took you to complete the assignment
 #-----------------------------------------------------------*/
 
@@ -70,9 +70,9 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     docText_noSpaces = docText.replace(" ","")
     num_chars = len(docText_noSpaces)
     
-    sql_createDoc = "INSERT INTO documents (doc, 'cat_ID', text, num_chars, date, title) VALUES (%s,%s,%s,%s,%s,%s)"
+    sql_createDoc = "INSERT INTO documents (doc, cat_id, text, num_chars, date, title) VALUES (%s,%s,%s,%s,%s,%s)"
     
-    recset_createDoc = [docId, docText, num_chars,docDate,docTitle]
+    recset_createDoc = [docId, cat_id, docText, num_chars,docDate,docTitle]
     cur.execute(sql_createDoc, recset_createDoc)
     
 
@@ -86,7 +86,7 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     docText_lower = docText_clearPunc.lower()
     docText_terms = docText_lower.split()
     
-    for term in docText_lower:
+    for term in docText_terms:
         sql_check_term = "SELECT 1 FROM term where term=%s"
         recset_check_term = [term]
         cur.execute(sql_check_term, recset_check_term)
@@ -106,6 +106,18 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     # 4.3 Insert the term and its corresponding count into the database
     # --> add your Python
     # code here
+    
+    term_map = {}
+    for term in docText_terms:
+        if term in term_map:
+            term_map[term] += 1
+        else:
+            term_map[term] = 1
+    for key in term_map.keys():
+        sql_update_index = "INSERT INTO index (doc_id, term, count) VALUES (%s, %s, %s)"
+        recset_update_index = [docId, key, term_map[key]]
+        cur.execute(sql_update_index, recset_update_index)
+    
     
     
 '''
