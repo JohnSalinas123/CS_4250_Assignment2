@@ -45,7 +45,6 @@ def createCategory(cur, catId, catName):
     # --> add your Python code here
     
     sql = "INSERT INTO category (id, name) Values (%s, %s)"
-    
     recset = [catId,catName]
     cur.execute(sql, recset)
 
@@ -73,7 +72,6 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     num_chars = len(docText_punc)
     
     sql_createDoc = "INSERT INTO documents (doc, cat_id, text, num_chars, date, title) VALUES (%s,%s,%s,%s,%s,%s)"
-    
     recset_createDoc = [docId, cat_id, docText, num_chars,docDate,docTitle]
     cur.execute(sql_createDoc, recset_createDoc)
     
@@ -169,11 +167,11 @@ def updateDocument(cur, docId, docText, docTitle, docDate, docCat):
 
     # 1 Delete the document
     # --> add your Python code here
-    deleteDocument(docId)
+    deleteDocument(cur, docId)
 
     # 2 Create the document with the same id
     # --> add your Python code here
-    createDocument(docId, docText, docTitle, docDate, docCat)
+    createDocument(cur, docId, docText, docTitle, docDate, docCat)
 
 def getIndex(cur):
 
