@@ -1,0 +1,59 @@
+{
+    "Exercise" : {
+        "text" : "Baseball is played during summer months.",
+        "num_chars" : 34,
+        "date" : "2023-10-03",
+        "category" : "Sports",
+        "terms" : {
+            "Baseball" : 1,
+            "is" : 1,
+            "played" : 1,
+            "during" : 1,
+            "summer" : 1,
+            "months" : 1
+        }
+    },
+    "California" : {
+        "text" : "Summer is the time for picnics here. Picnics time! ",
+        "num_chars" : 40,
+        "date" : "2023-10-03",
+        "category" : "Sports",
+        "terms" : {
+           "Summer" : 1,
+           "is" : 1,
+           "the" : 1,
+           "time" : 2,
+           "for" : 1,
+           "picnics" : 2,
+           "here" : 1
+        }
+    },
+    "Discovery" : {
+        "text" : "Months, months, months later we found out why.",
+        "num_chars" : 36,
+        "date" : "2023-10-03",
+        "category" : "Seasons",
+        "terms" : {
+            "months" : 3,
+            "later" : 1,
+            "we" : 1,
+            "found" : 1,
+            "out" : 1,
+            "why" : 1
+        }
+    },
+    "Arizona" : {
+        "text" : "Why is summer so hot here? So hot! ",
+        "num_chars" : 25,
+        "date" : "2023-10-03",
+        "category" : "Seasons",
+        "terms" : {
+            "why" : 1,
+            "is" : 1,
+            "summer" : 1,
+            "so" : 2,
+            "hot" : 2,
+            "here" : 1
+        }
+    }
+}
