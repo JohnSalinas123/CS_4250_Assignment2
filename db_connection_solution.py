@@ -180,7 +180,7 @@ def getIndex(cur):
     # ...
     # --> add your Python code here
     
-    sql_query_index = "SELECT doc_id, term, count title FROM INDEX JOIN documents WHERE doc_id = doc"
+    sql_query_index = "SELECT I.doc_id, I.term, I.count, D.title FROM INDEX I JOIN documents D ON I.doc_id = D.doc"
     cur.execute(sql_query_index)
     index_list = cur.fetchall()
     
@@ -195,8 +195,15 @@ def getIndex(cur):
         else:
             index_map[cur_term] = {}
             index_map[cur_term][cur_title] = cur_count
+    
+    inverse_index = "{"
+    for key, inner_dict in index_map.items():
+        inner_string = ",".join([f"{category}:{count}" for category, count in inner_dict.items()])
+        inverse_index += f"'{key}':'{inner_string}',"
+        
+    inverse_index = "\n" + inverse_index.rstrip(',') + "}"
             
-    print(index_map)
+    return inverse_index
         
         
 
