@@ -68,7 +68,9 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     # --> add your Python code here
     
     docText_noSpaces = docText.replace(" ","")
-    num_chars = len(docText_noSpaces)
+    docText_punc = docText_noSpaces.translate(str.maketrans('', '', string.punctuation))
+    
+    num_chars = len(docText_punc)
     
     sql_createDoc = "INSERT INTO documents (doc, cat_id, text, num_chars, date, title) VALUES (%s,%s,%s,%s,%s,%s)"
     
