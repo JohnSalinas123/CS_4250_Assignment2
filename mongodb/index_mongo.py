@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
         elif (option == "e"):
 
-            index = getIndex()
+            index = getIndex(cur)
             print(index)
 
         elif (option == "q"):

@@ -55,14 +55,14 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     
     new_document = {
         "_id" : docId,
-        docTitle : {
-            "text" : docText,
-            "num_chars" : num_chars,
-            "date" : docDate,
-            "category" : docCat,
-            "terms" : term_map
-        }
+        "title" : docTitle,
+        "text" : docText,
+        "num_chars" : num_chars,
+        "date" : docDate,
+        "category" : docCat,
+        "terms" : term_map
     }
+    
     
     cur.insert_one(new_document)
 
@@ -86,8 +86,8 @@ def updateDocument(cur, docId, docText, docTitle, docDate, docCat):
     createDocument(cur, docId, docText, docTitle, docDate, docCat)
     
 
-'''
-def getIndex():
+
+def getIndex(cur):
 
     # Query the database to return the documents where each term occurs with their corresponding count. Output example:
     # {'baseball':'Exercise:1','summer':'Exercise:1,California:1,Arizona:1','months':'Exercise:1,Discovery:3'}
@@ -95,4 +95,28 @@ def getIndex():
     # --> add your Python code here
     # 
     # 
-'''
+    index_map = {}
+    
+    
+    for doc in cur.find():
+        doc_title = doc['title']
+        doc_terms = doc['terms']
+        for term, freq in doc_terms.items():
+            if term not in index_map:
+                index_map[term] = {}
+                index_map[term][doc_title] = freq
+            else:
+                index_map[term][doc_title] = freq
+            
+                
+    inverse_index = "{"
+    for key, inner_dict in index_map.items():
+        inner_string = ",".join([f"{category}:{count}" for category, count in inner_dict.items()])
+        inverse_index += f"'{key}':'{inner_string}',"
+        
+    inverse_index = "\n" + inverse_index.rstrip(',') + "}"
+    
+    return inverse_index
+        
+
+    
