@@ -2,7 +2,7 @@
 {
   "_id": "1",
   "title" : "Exercise",
-  "text": "Baseball is played during summer months. ",
+  "text": "Baseball is played during summer months.",
   "num_chars": 34,
   "date": "2023-10-03",
   "category": "Sports",
@@ -18,7 +18,7 @@
 {
   "_id": "2",
   "title" : "California",
-  "text": "Summer is the time for picnics here. Picnics time! ",
+  "text": "Summer is the time for picnics here. Picnics time!",
   "num_chars": 40,
   "date": "2023-10-03",
   "category": "Sports",

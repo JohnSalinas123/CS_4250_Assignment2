@@ -32,9 +32,6 @@ def connectDataBase():
 def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     
 
-    # 2 Insert the document in the database. For num_chars, discard the spaces and punctuation marks.
-    # --> add your Python code here
-    
     # count number of chars, excluding spaces
     docText_noSpaces = docText.replace(" ","")
     docText_punc = docText_noSpaces.translate(str.maketrans('', '', string.punctuation))
@@ -44,30 +41,9 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     docText_clearPunc = docText.translate(str.maketrans('', '', string.punctuation))
     docText_lower = docText_clearPunc.lower()
     docText_terms = docText_lower.split()
-    
-    term_map = {}
-    for term in docText_terms:
-        if term in term_map:
-            term_map[term] += 1
-        else:
-            term_map[term] = 1
-    
-    
-    # add terms to the term collection
-    # add a reference the document being created to each appropriate term
-    term_collec = cur['term']
 
-    for term, freq in term_map.items():
-        
-        new_term = {
-            "term" : term,
-            "num_chars" : len(term),
-        }
-        
-        term_collec.insert_one(new_term)
-    
-    
-        
+    # add document
+    doc_collec = cur['document']
     
     new_document = {
         "_id" : docId,
@@ -76,21 +52,91 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
         "num_chars" : num_chars,
         "date" : docDate,
         "category" : docCat,
-        #"terms" : term_map
     }
     
+    doc_collec.insert_one(new_document)
     
-    cur.insert_one(new_document)
+    
+    
+    term_map = {}
+    for term in docText_terms:
+        if term in term_map:
+            term_map[term] += 1
+        else:
+            term_map[term] = 1
+            
+            
+
+    
+    
+    # add terms to the term collection
+    # add a reference the document being created to each appropriate term
+    term_collec = cur['term']
+
+    for term, count in term_map.items():
+        
+        # check if term already exists
+        query_term_exists = {"term": term}
+        if term_collec.find_one(query_term_exists):
+            
+            newIndex = {
+                "doc_id" : docId,
+                "count" : count
+            }
+            
+            term_collec.update_one({"term" : term}, {"$push": {"docs" : newIndex}}, upsert = True)
+            
+        else:
+            new_term = {
+                "term" : term,
+                "num_chars" : len(term),
+                "docs": [
+                    {
+                        "doc_id" : docId,
+                        "count" : count
+                    }
+                ]
+            }
+        
+            term_collec.insert_one(new_term)
+
 
 
 def deleteDocument(cur, docId):
-
+    
+    doc_collec = cur['document']
+    document = doc_collec.find_one({"_id" : docId})
+    if not document:
+        print("Document not found!")
+        return
+    
+    doc_text = document["text"]
+    
+    # get list of terms
+    doc_text_clearPunc = doc_text.translate(str.maketrans('', '', string.punctuation))
+    doc_text_lower = doc_text_clearPunc.lower()
+    doc_text_terms = doc_text_lower.split()
+    
+    term_collec = cur['term']
+    
+    for term in doc_text_terms:
+        cur_term = term_collec[term]
+        cur_docs_index = cur_term["docs"]
+        num_deleted = term_collec.update_many(
+            {"term" : term},
+            {"$pull": {"docs": {"doc_id": docId}}}
+        )
+        
+        print(num_deleted)
+        
+    term_collec.delete_many({"docs" : { "$size" : 0}})
     
     # delete document
     delete_query = { "_id" : docId}
-    cur.delete_one(delete_query)
-    
+    doc_collec.delete_one(delete_query)
 
+
+'''
 def updateDocument(cur, docId, docText, docTitle, docDate, docCat):
 
     # 1 Delete the document
@@ -134,5 +180,5 @@ def getIndex(cur):
     
     return inverse_index
         
-
+'''
     
