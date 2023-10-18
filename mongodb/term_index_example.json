@@ -1,0 +1,18 @@
+[
+    {
+        "term" : "summer",
+        "num_chars" : 6,
+        "docs" : 
+        [
+            {
+                "doc_id" : 1,
+                "count" : 1
+            },
+            {
+                "doc_id" : 2,
+                "count" : 1
+            }
+        ]
+        
+    }
+]
