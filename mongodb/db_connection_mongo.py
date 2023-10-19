@@ -121,7 +121,6 @@ def deleteDocument(cur, docId):
     
     for term in doc_text_terms:
         cur_term = term_collec[term]
-        cur_docs_index = cur_term["docs"]
         num_deleted = term_collec.update_many(
             {"term" : term},
             {"$pull": {"docs": {"doc_id": docId}}}
@@ -136,7 +135,6 @@ def deleteDocument(cur, docId):
     doc_collec.delete_one(delete_query)
 
 
-'''
 def updateDocument(cur, docId, docText, docTitle, docDate, docCat):
 
     # 1 Delete the document
@@ -159,18 +157,25 @@ def getIndex(cur):
     # 
     index_map = {}
     
+    term_collec = cur['term']
+    term_documents = term_collec.find({})
     
-    for doc in cur.find():
-        doc_title = doc['title']
-        doc_terms = doc['terms']
-        for term, freq in doc_terms.items():
-            if term not in index_map:
-                index_map[term] = {}
-                index_map[term][doc_title] = freq
-            else:
-                index_map[term][doc_title] = freq
+    for term_doc in term_documents:
+        cur_term = term_doc["term"]
+        
+        for doc in term_doc['docs']:
+            doc_id = doc["doc_id"]
+            count = doc["count"]
+            doc_collect = cur["document"]
+            doc_document = doc_collect.find_one({"_id" : doc_id})
+            doc_title = doc_document["title"]
             
-                
+            if cur_term in index_map:
+                index_map[cur_term][doc_title] = count
+            else:
+                index_map[cur_term] = {}
+                index_map[cur_term][doc_title] = count
+                 
     inverse_index = "{"
     for key, inner_dict in index_map.items():
         inner_string = ",".join([f"{category}:{count}" for category, count in inner_dict.items()])
@@ -179,6 +184,6 @@ def getIndex(cur):
     inverse_index = "\n" + inverse_index.rstrip(',') + "}"
     
     return inverse_index
-        
-'''
+
+
     
