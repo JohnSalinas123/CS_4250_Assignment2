@@ -41,23 +41,7 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
     docText_clearPunc = docText.translate(str.maketrans('', '', string.punctuation))
     docText_lower = docText_clearPunc.lower()
     docText_terms = docText_lower.split()
-
-    # add document
-    doc_collec = cur['document']
-    
-    new_document = {
-        "_id" : docId,
-        "title" : docTitle,
-        "text" : docText,
-        "num_chars" : num_chars,
-        "date" : docDate,
-        "category" : docCat,
-    }
-    
-    doc_collec.insert_one(new_document)
-    
-    
-    
+   
     term_map = {}
     for term in docText_terms:
         if term in term_map:
@@ -66,9 +50,6 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
             term_map[term] = 1
             
             
-
-    
-    
     # add terms to the term collection
     # add a reference the document being created to each appropriate term
     term_collec = cur['term']
@@ -79,12 +60,17 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
         query_term_exists = {"term": term}
         if term_collec.find_one(query_term_exists):
             
-            newIndex = {
-                "doc_id" : docId,
-                "count" : count
+            new_document = {
+                "_id" : docId,
+                "count": count,
+                "title" : docTitle,
+                "text" : docText,
+                "num_chars" : num_chars,
+                "date" : docDate,
+                "category" : docCat,
             }
-            
-            term_collec.update_one({"term" : term}, {"$push": {"docs" : newIndex}}, upsert = True)
+        
+            term_collec.update_one({"term" : term}, {"$push": {"docs" : new_document}}, upsert = True)
             
         else:
             new_term = {
@@ -92,8 +78,13 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
                 "num_chars" : len(term),
                 "docs": [
                     {
-                        "doc_id" : docId,
-                        "count" : count
+                        "_id" : docId,
+                        "count": count,
+                        "title" : docTitle,
+                        "text" : docText,
+                        "num_chars" : num_chars,
+                        "date" : docDate,
+                        "category" : docCat,
                     }
                 ]
             }
@@ -104,35 +95,16 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
 
 def deleteDocument(cur, docId):
     
-    doc_collec = cur['document']
-    document = doc_collec.find_one({"_id" : docId})
-    if not document:
-        print("Document not found!")
-        return
-    
-    doc_text = document["text"]
-    
-    # get list of terms
-    doc_text_clearPunc = doc_text.translate(str.maketrans('', '', string.punctuation))
-    doc_text_lower = doc_text_clearPunc.lower()
-    doc_text_terms = doc_text_lower.split()
-    
     term_collec = cur['term']
     
-    for term in doc_text_terms:
-        cur_term = term_collec[term]
-        num_deleted = term_collec.update_many(
-            {"term" : term},
-            {"$pull": {"docs": {"doc_id": docId}}}
-        )
-        
-        print(num_deleted)
+    num_deleted = term_collec.update_many(
+        {},
+        {"$pull": {"docs": {"_id": docId}}}
+    
+    )
+    print(num_deleted)
         
     term_collec.delete_many({"docs" : { "$size" : 0}})
-    
-    # delete document
-    delete_query = { "_id" : docId}
-    doc_collec.delete_one(delete_query)
 
 
 def updateDocument(cur, docId, docText, docTitle, docDate, docCat):
@@ -146,7 +118,7 @@ def updateDocument(cur, docId, docText, docTitle, docDate, docCat):
     createDocument(cur, docId, docText, docTitle, docDate, docCat)
     
 
-
+'''
 def getIndex(cur):
 
     # Query the database to return the documents where each term occurs with their corresponding count. Output example:
@@ -185,5 +157,5 @@ def getIndex(cur):
     
     return inverse_index
 
-
+'''
     
