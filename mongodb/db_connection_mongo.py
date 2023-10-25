@@ -118,7 +118,7 @@ def updateDocument(cur, docId, docText, docTitle, docDate, docCat):
     createDocument(cur, docId, docText, docTitle, docDate, docCat)
     
 
-'''
+
 def getIndex(cur):
 
     # Query the database to return the documents where each term occurs with their corresponding count. Output example:
@@ -136,7 +136,7 @@ def getIndex(cur):
         cur_term = term_doc["term"]
         
         for doc in term_doc['docs']:
-            doc_id = doc["doc_id"]
+            doc_id = doc["_id"]
             count = doc["count"]
             doc_collect = cur["document"]
             doc_document = doc_collect.find_one({"_id" : doc_id})
@@ -157,5 +157,4 @@ def getIndex(cur):
     
     return inverse_index
 
-'''
     
