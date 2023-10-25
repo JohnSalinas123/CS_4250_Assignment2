@@ -23,7 +23,7 @@ def connectDataBase():
     # Create a database connection object using psycopg2
     # --> add your Python code here
     client = MongoClient(host=['localhost:27017'])
-    db_cur = client["documents"]
+    db_cur = client["corpus"]
     
     
     return db_cur
